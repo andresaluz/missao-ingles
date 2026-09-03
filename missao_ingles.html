@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Missão Inglês! 🚀</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky1:#BEE9FF; --sky2:#EAF9FF;
+    --ink:#2B3A55;
+    --coral:#FF6B6B; --coral-d:#E04F4F;
+    --sun:#FFC531; --sun-d:#E0A614;
+    --leaf:#58C472; --leaf-d:#3EA65A;
+    --berry:#4D7CFE; --berry-d:#3560D6;
+    --grape:#9B5DE5; --grape-d:#7D42C8;
+    --paper:#FFFFFF;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Baloo 2', 'Comic Sans MS', system-ui, sans-serif;
+    background:linear-gradient(180deg, var(--sky1), var(--sky2) 60%);
+    min-height:100vh; color:var(--ink);
+    display:flex; justify-content:center;
+  }
+  /* clouds */
+  body::before, body::after{
+    content:"☁️"; position:fixed; font-size:60px; opacity:.5; z-index:0;
+    animation:float 14s ease-in-out infinite;
+  }
+  body::before{top:6%; left:6%;}
+  body::after{top:14%; right:8%; animation-delay:-7s;}
+  @keyframes float{0%,100%{transform:translateX(0)}50%{transform:translateX(26px)}}
+  @media (prefers-reduced-motion:reduce){ *{animation:none !important; transition:none !important;} }
+
+  #app{width:100%; max-width:560px; padding:16px 14px 40px; position:relative; z-index:1;}
+
+  /* top bar */
+  .topbar{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px; min-height:52px;}
+  .home-btn{
+    background:var(--paper); border:3px solid var(--ink); border-radius:16px;
+    font-family:inherit; font-weight:700; font-size:17px; color:var(--ink);
+    padding:8px 14px; cursor:pointer; box-shadow:0 4px 0 var(--ink);
+  }
+  .home-btn:active{transform:translateY(3px); box-shadow:0 1px 0 var(--ink);}
+  .score-pill{
+    background:var(--sun); border:3px solid var(--ink); border-radius:999px;
+    padding:8px 16px; font-weight:800; font-size:17px; box-shadow:0 4px 0 var(--ink);
+    white-space:nowrap;
+  }
+
+  .screen{display:none;}
+  .screen.active{display:block; animation:pop .25s ease;}
+  @keyframes pop{from{opacity:0; transform:scale(.97)}to{opacity:1; transform:scale(1)}}
+
+  h1{font-size:34px; font-weight:800; text-align:center; margin:6px 0 2px; line-height:1.15;}
+  .subtitle{text-align:center; font-size:18px; margin:0 0 18px; font-weight:500;}
+
+  .mascot{font-size:72px; text-align:center; margin:4px 0;}
+
+  /* journey */
+  .journey{
+    background:var(--paper); border:3px solid var(--ink); border-radius:22px;
+    padding:14px 12px; margin-bottom:18px; box-shadow:0 5px 0 var(--ink);
+  }
+  .journey-title{font-weight:800; font-size:16px; text-align:center; margin-bottom:8px;}
+  .journey-track{display:flex; align-items:center; justify-content:space-between;}
+  .j-step{display:flex; flex-direction:column; align-items:center; width:70px;}
+  .j-emoji{font-size:30px; filter:grayscale(1); opacity:.45; transition:.3s;}
+  .j-step.on .j-emoji{filter:none; opacity:1; transform:scale(1.15);}
+  .j-label{font-size:11px; font-weight:700; text-align:center; margin-top:2px;}
+  .j-line{flex:1; height:6px; background:#DCE9F5; border-radius:99px; margin:0 2px 16px;}
+  .j-line.on{background:var(--leaf);}
+
+  /* mission buttons */
+  .missions{display:flex; flex-direction:column; gap:14px;}
+  .mission-btn{
+    display:flex; align-items:center; gap:14px; width:100%;
+    border:3px solid var(--ink); border-radius:22px; padding:14px 16px;
+    font-family:inherit; text-align:left; cursor:pointer; color:var(--ink);
+    box-shadow:0 6px 0 var(--ink); transition:transform .1s;
+  }
+  .mission-btn:active{transform:translateY(4px); box-shadow:0 2px 0 var(--ink);}
+  .mission-btn .m-emoji{font-size:42px;}
+  .mission-btn .m-name{font-size:21px; font-weight:800; line-height:1.1;}
+  .mission-btn .m-desc{font-size:14px; font-weight:500;}
+  .mission-btn .m-check{margin-left:auto; font-size:26px;}
+  .m1{background:#FFE1E1;} .m2{background:#FFF3C9;} .m3{background:#DFF6E4;} .m4{background:#E4ECFF;}
+
+  /* learn cards */
+  .learn-card{
+    background:var(--paper); border:3px solid var(--ink); border-radius:26px;
+    padding:22px 20px; box-shadow:0 6px 0 var(--ink); text-align:center;
+    min-height:300px; display:flex; flex-direction:column; justify-content:center; gap:8px;
+  }
+  .learn-card .big-emoji{font-size:64px;}
+  .learn-card h2{font-size:26px; margin:4px 0; font-weight:800;}
+  .learn-card p{font-size:19px; margin:4px 0; line-height:1.35;}
+  .en{color:var(--berry-d); font-weight:800;}
+  .pt{color:var(--leaf-d); font-weight:700;}
+  .hl{background:var(--sun); padding:1px 8px; border-radius:8px; font-weight:800; white-space:nowrap;}
+  .word-grid{display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:6px;}
+  .word-chipv{background:#F1F6FF; border:2px solid var(--ink); border-radius:14px; padding:6px 10px; font-size:16px; font-weight:700;}
+  .word-chipv small{display:block; font-weight:500; color:var(--leaf-d); font-size:13px;}
+
+  .card-nav{display:flex; gap:10px; margin-top:16px;}
+  .nav-btn{
+    flex:1; font-family:inherit; font-size:20px; font-weight:800; color:#fff;
+    background:var(--berry); border:3px solid var(--ink); border-radius:18px;
+    padding:14px; cursor:pointer; box-shadow:0 5px 0 var(--ink);
+  }
+  .nav-btn.secondary{background:#fff; color:var(--ink);}
+  .nav-btn:active{transform:translateY(3px); box-shadow:0 2px 0 var(--ink);}
+  .nav-btn:disabled{opacity:.35; pointer-events:none;}
+  .dots{display:flex; gap:6px; justify-content:center; margin-top:14px;}
+  .dot{width:12px; height:12px; border-radius:99px; background:#CBDDEE; border:2px solid var(--ink);}
+  .dot.on{background:var(--sun);}
+
+  /* practice */
+  .progress-wrap{margin:0 0 14px;}
+  .progress-label{font-weight:800; font-size:16px; text-align:center; margin-bottom:6px;}
+  .progress-bar{height:20px; background:#fff; border:3px solid var(--ink); border-radius:99px; overflow:hidden;}
+  .progress-fill{height:100%; width:0%; background:linear-gradient(90deg,var(--leaf),var(--sun)); transition:width .4s;}
+
+  .q-card{
+    background:var(--paper); border:3px solid var(--ink); border-radius:26px;
+    padding:20px 18px; box-shadow:0 6px 0 var(--ink); text-align:center;
+  }
+  .q-emoji{font-size:50px;}
+  .q-text{font-size:21px; font-weight:800; margin:8px 0 16px; line-height:1.3;}
+  .answers{display:flex; flex-direction:column; gap:10px;}
+  .ans-btn{
+    font-family:inherit; font-size:19px; font-weight:700; color:var(--ink);
+    background:#F4F9FF; border:3px solid var(--ink); border-radius:16px;
+    padding:13px 12px; cursor:pointer; box-shadow:0 4px 0 var(--ink); transition:.12s;
+  }
+  .ans-btn:active{transform:translateY(3px); box-shadow:0 1px 0 var(--ink);}
+  .ans-btn.correct{background:var(--leaf); color:#fff; animation:bounce .4s;}
+  .ans-btn.wrong{background:var(--coral); color:#fff; animation:shake .35s;}
+  .ans-btn.locked{pointer-events:none;}
+  @keyframes bounce{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+  /* word ordering */
+  .build-zone{
+    min-height:56px; background:#F4F9FF; border:3px dashed var(--ink); border-radius:16px;
+    display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:center;
+    padding:10px; margin-bottom:12px;
+  }
+  .build-zone.empty::before{content:"Toque nas palavras 👇"; color:#8AA2C0; font-weight:700; font-size:16px;}
+  .chips{display:flex; flex-wrap:wrap; gap:8px; justify-content:center;}
+  .chip{
+    font-family:inherit; font-size:18px; font-weight:800; color:var(--ink);
+    background:var(--sun); border:3px solid var(--ink); border-radius:14px;
+    padding:8px 14px; cursor:pointer; box-shadow:0 4px 0 var(--ink);
+  }
+  .chip.in-zone{background:#fff;}
+  .chip:active{transform:translateY(3px); box-shadow:0 1px 0 var(--ink);}
+  .check-btn{margin-top:14px; width:100%;}
+
+  .feedback{
+    margin-top:14px; font-size:19px; font-weight:800; min-height:52px;
+    border-radius:16px; padding:10px 12px; display:none; line-height:1.3;
+  }
+  .feedback.show{display:block; animation:pop .25s;}
+  .feedback.good{background:#DFF6E4; border:3px solid var(--leaf-d); color:var(--leaf-d);}
+  .feedback.bad{background:#FFE9E9; border:3px solid var(--coral-d); color:var(--coral-d);}
+  .feedback small{display:block; font-weight:600; font-size:15px; color:var(--ink);}
+
+  /* memory game */
+  .mem-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:10px;}
+  .mem-card{
+    aspect-ratio:3/3.4; perspective:600px; cursor:pointer; border:none; background:none; padding:0; font-family:inherit;
+  }
+  .mem-inner{position:relative; width:100%; height:100%; transition:transform .35s; transform-style:preserve-3d;}
+  .mem-card.flipped .mem-inner{transform:rotateY(180deg);}
+  .mem-face{
+    position:absolute; inset:0; backface-visibility:hidden; border:3px solid var(--ink);
+    border-radius:16px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    box-shadow:0 4px 0 var(--ink); padding:4px;
+  }
+  .mem-front{background:var(--grape); color:#fff; font-size:34px;}
+  .mem-back{background:#fff; transform:rotateY(180deg); font-weight:800; font-size:14px; text-align:center; line-height:1.2; gap:2px;}
+  .mem-back .mem-e{font-size:26px;}
+  .mem-card.matched .mem-back{background:#DFF6E4; border-color:var(--leaf-d);}
+  .mem-card.matched{pointer-events:none;}
+  .game-status{text-align:center; font-size:18px; font-weight:800; margin:12px 0;}
+
+  /* completion */
+  .final-card{
+    background:var(--paper); border:3px solid var(--ink); border-radius:26px;
+    padding:28px 20px; box-shadow:0 6px 0 var(--ink); text-align:center;
+  }
+  .final-card h1{font-size:38px;}
+  .medal{font-size:90px; animation:bounce 1.2s infinite;}
+  .stat-row{display:flex; justify-content:space-between; background:#F4F9FF; border:2px solid var(--ink); border-radius:14px; padding:10px 14px; margin:8px 0; font-weight:700; font-size:17px;}
+
+  /* confetti */
+  .confetti{position:fixed; top:-20px; font-size:24px; z-index:9; animation:fall linear forwards;}
+  @keyframes fall{to{transform:translateY(110vh) rotate(540deg);}}
+
+  .stars-line{font-size:22px; letter-spacing:3px; margin-top:4px;}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div class="topbar">
+    <button class="home-btn" id="btnHome" style="visibility:hidden" onclick="goHome()">🏠 Início</button>
+    <div class="score-pill">⭐ <span id="scoreVal">0</span> pontos</div>
+  </div>
+
+  <!-- ================= HOME ================= -->
+  <section class="screen active" id="scr-home">
+    <div class="mascot">🦉</div>
+    <h1>Missão Inglês!</h1>
+    <p class="subtitle">Olá! Eu sou a Coruja Lulu. Vamos aprender inglês juntos? 💛</p>
+
+    <div class="journey">
+      <div class="journey-title">Sua jornada</div>
+      <div class="journey-track">
+        <div class="j-step on" id="j0"><div class="j-emoji">🌱</div><div class="j-label">Começando</div></div>
+        <div class="j-line" id="jl0"></div>
+        <div class="j-step" id="j1"><div class="j-emoji">⭐</div><div class="j-label">Aprendendo</div></div>
+        <div class="j-line" id="jl1"></div>
+        <div class="j-step" id="j2"><div class="j-emoji">🚀</div><div class="j-label">Mandando bem</div></div>
+        <div class="j-line" id="jl2"></div>
+        <div class="j-step" id="j3"><div class="j-emoji">🏆</div><div class="j-label">Mestre do Inglês</div></div>
+      </div>
+    </div>
+
+    <div class="missions">
+      <button class="mission-btn m1" onclick="startLearn()">
+        <span class="m-emoji">📚</span>
+        <span><span class="m-name">Vamos aprender!</span><br><span class="m-desc">Descubra as palavras novas</span></span>
+        <span class="m-check" id="chkLearn"></span>
+      </button>
+      <button class="mission-btn m2" onclick="startPractice()">
+        <span class="m-emoji">✏️</span>
+        <span><span class="m-name">Vamos praticar!</span><br><span class="m-desc">Responda e ganhe estrelas</span></span>
+        <span class="m-check" id="chkPractice"></span>
+      </button>
+      <button class="mission-btn m3" onclick="startGame()">
+        <span class="m-emoji">🎮</span>
+        <span><span class="m-name">Hora do jogo!</span><br><span class="m-desc">Jogo da memória em inglês</span></span>
+        <span class="m-check" id="chkGame"></span>
+      </button>
+      <button class="mission-btn m4" id="btnFinal" onclick="showFinal()" style="opacity:.5">
+        <span class="m-emoji">🏆</span>
+        <span><span class="m-name">Minha conquista</span><br><span class="m-desc">Complete tudo para abrir!</span></span>
+        <span class="m-check" id="chkFinal">🔒</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ================= LEARN ================= -->
+  <section class="screen" id="scr-learn">
+    <h1 style="font-size:26px">📚 Vamos aprender!</h1>
+    <div id="learnCard" class="learn-card"></div>
+    <div class="dots" id="learnDots"></div>
+    <div class="card-nav">
+      <button class="nav-btn secondary" id="learnPrev" onclick="learnMove(-1)">⬅ Voltar</button>
+      <button class="nav-btn" id="learnNext" onclick="learnMove(1)">Próximo ➡</button>
+    </div>
+  </section>
+
+  <!-- ================= PRACTICE ================= -->
+  <section class="screen" id="scr-practice">
+    <h1 style="font-size:26px">✏️ Vamos praticar!</h1>
+    <div class="progress-wrap">
+      <div class="progress-label" id="qCounter">Questão 1 de 12</div>
+      <div class="progress-bar"><div class="progress-fill" id="qBar"></div></div>
+      <div class="stars-line" style="text-align:center" id="qStars"></div>
+    </div>
+    <div class="q-card" id="qCard"></div>
+  </section>
+
+  <!-- ================= GAME ================= -->
+  <section class="screen" id="scr-game">
+    <h1 style="font-size:26px">🎮 Hora do jogo!</h1>
+    <p class="subtitle" style="margin-bottom:10px">Encontre os pares: inglês 🇺🇸 + português 🇧🇷</p>
+    <div class="game-status" id="gameStatus">Pares encontrados: 0 de 6</div>
+    <div class="mem-grid" id="memGrid"></div>
+  </section>
+
+  <!-- ================= FINAL ================= -->
+  <section class="screen" id="scr-final">
+    <div class="final-card">
+      <div class="medal">🏆</div>
+      <h1>🎉 PARABÉNS!</h1>
+      <p class="subtitle" style="margin-bottom:14px">Você completou sua missão de Inglês!</p>
+      <div class="stat-row"><span>⭐ Pontos totais</span><span id="fPoints">0</span></div>
+      <div class="stat-row"><span>✏️ Acertos de primeira</span><span id="fFirst">0 de 12</span></div>
+      <div class="stat-row"><span>🎮 Jogo da memória</span><span id="fGame">—</span></div>
+      <div class="stat-row"><span>🏅 Seu título</span><span>Mestre do Inglês!</span></div>
+      <button class="nav-btn" style="margin-top:14px" onclick="restartAll()">🔄 Jogar de novo</button>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* ---------------- STATE ---------------- */
+const S = {
+  points:0,
+  learnDone:false, practiceDone:false, gameDone:false,
+  learnIdx:0,
+  qIdx:0, firstTryCorrect:0, qAnsweredFirstTry:true,
+  gameMoves:0
+};
+
+function addPoints(n){
+  S.points += n;
+  document.getElementById('scoreVal').textContent = S.points;
+}
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.getElementById('btnHome').style.visibility = (id==='scr-home')?'hidden':'visible';
+  window.scrollTo(0,0);
+}
+function goHome(){ show('scr-home'); refreshHome(); }
+
+function refreshHome(){
+  document.getElementById('chkLearn').textContent = S.learnDone ? '✅' : '';
+  document.getElementById('chkPractice').textContent = S.practiceDone ? '✅' : '';
+  document.getElementById('chkGame').textContent = S.gameDone ? '✅' : '';
+  const done = [S.learnDone,S.practiceDone,S.gameDone].filter(Boolean).length;
+  for(let i=0;i<=3;i++){
+    document.getElementById('j'+i).classList.toggle('on', i<=done);
+    if(i<3) document.getElementById('jl'+i).classList.toggle('on', i<done);
+  }
+  const allDone = done===3;
+  const bf = document.getElementById('btnFinal');
+  bf.style.opacity = allDone? '1':'.5';
+  document.getElementById('chkFinal').textContent = allDone? '🌟':'🔒';
+  bf.disabled = !allDone;
+}
+
+/* confetti */
+function confetti(){
+  const emo = ['🎉','⭐','🎊','💛','🌟'];
+  for(let i=0;i<24;i++){
+    const c=document.createElement('div');
+    c.className='confetti';
+    c.textContent = emo[i%emo.length];
+    c.style.left = Math.random()*100+'vw';
+    c.style.animationDuration = (2+Math.random()*2)+'s';
+    c.style.animationDelay = (Math.random()*0.6)+'s';
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(), 4500);
+  }
+}
+
+/* ---------------- LEARN CONTENT (from the PDF) ---------------- */
+const learnCards = [
+  {e:'🌍', t:'O planeta se move!', h:`<p>A Terra gira o tempo todo. Em inglês, esse giro tem nome:</p>
+    <p><span class="hl en">Rotation</span></p>
+    <p>Dura <span class="en">24 hours</span> (24 horas) = <span class="en">1 day and night</span></p>
+    <p class="pt">🌞 day = dia &nbsp;•&nbsp; 🌙 night = noite</p>`},
+  {e:'☀️', t:'A volta ao redor do Sol', h:`<p>A Terra também dá uma volta enorme ao redor do Sol:</p>
+    <p><span class="hl en">Revolution</span></p>
+    <p>Dura <span class="en">365 days</span> (365 dias) = <span class="en">1 year</span> (1 ano)!</p>`},
+  {e:'🍂', t:'As estações do ano', h:`<p>Por causa da <span class="en">Revolution</span>, temos as estações:</p>
+    <div class="word-grid">
+      <span class="word-chipv">☀️ Summer<small>Verão</small></span>
+      <span class="word-chipv">🌸 Spring<small>Primavera</small></span>
+      <span class="word-chipv">🍁 Fall<small>Outono</small></span>
+      <span class="word-chipv">❄️ Winter<small>Inverno</small></span>
+    </div>`},
+  {e:'🧭', t:'Os pontos cardeais', h:`<p>Eles ajudam a gente a se localizar no mapa!</p>
+    <div class="word-grid">
+      <span class="word-chipv">⬆️ North (N)<small>Norte</small></span>
+      <span class="word-chipv">⬇️ South (S)<small>Sul</small></span>
+      <span class="word-chipv">➡️ East (E)<small>Leste</small></span>
+      <span class="word-chipv">⬅️ West (W)<small>Oeste</small></span>
+    </div>
+    <p style="font-size:16px">Dica: no mapa, o <span class="en">North</span> fica sempre em cima! ⬆️</p>`},
+  {e:'🐄', t:'Livestock Farmers', h:`<p><span class="hl en">Livestock farmers</span> são fazendeiros que <span class="en">raise animals</span> (criam animais).</p>
+    <p>Eles criam animais para <span class="en">produce food</span> (produzir alimentos) <span class="en">and other products</span> (e outros produtos).</p>
+    <p class="pt">Em português: Pecuária! 🐮🐷🐔</p>`},
+  {e:'🏠', t:'Intensive × Extensive', h:`<p>Existem dois jeitos de criar animais:</p>
+    <p><span class="hl en">Intensive</span> = <span class="en">indoors</span> 🏠<br>ambiente fechado, com <b>muitos</b> animais</p>
+    <p><span class="hl en">Extensive</span> = <span class="en">outdoors</span> 🌳<br>ao ar livre, com <b>poucos</b> animais</p>`},
+  {e:'🌽', t:'Arable Farming', h:`<p><span class="hl en">Arable farming</span> é a agricultura: o cultivo de terras! 🚜</p>
+    <p><span class="en">Growing</span> (cultivar) → <span class="en">crops</span> (plantações) → <span class="en">food</span> (alimento)! 🌾🥕</p>`},
+  {e:'♻️', t:'Cuidando do planeta', h:`<p><span class="hl en">Waste</span> = resíduos, desperdício 🗑️</p>
+    <p>A <span class="en">intensive farming</span> gera muito waste e causa <span class="en">environmental pollution</span> (poluição ambiental). 😔</p>
+    <p>Um <span class="en">small number</span> (pequena quantidade) de animais na <span class="en">extensive farming</span> = <span class="en">less pollution</span> (menos poluição)! 🌎💚</p>`},
+  {e:'😊', t:'Falando do que gostamos', h:`<p>Para dizer o que você gosta:</p>
+    <p><span class="hl en">I like</span> = Eu gosto 💛<br><span class="hl en">I don't like</span> = Eu não gosto</p>
+    <p>Para falar de outra pessoa:</p>
+    <p><span class="en">He/She likes</span> = Ele/Ela gosta<br><span class="en">He/She doesn't like</span> = Ele/Ela não gosta</p>`},
+  {e:'❓', t:'A pergunta mágica', h:`<p><span class="hl en">What do you like doing?</span></p>
+    <p class="pt">O que você gosta de fazer?</p>
+    <p>E as palavras têm uma ordem certinha:</p>
+    <p>✅ <span class="en">I like reading books.</span><br>✅ <span class="en">She doesn't like playing soccer.</span></p>`},
+  {e:'🎨', t:'Atividades divertidas (1)', h:`<div class="word-grid">
+      <span class="word-chipv">⚽ play soccer<small>jogar futebol</small></span>
+      <span class="word-chipv">📺 watch TV<small>assistir TV</small></span>
+      <span class="word-chipv">🎤 sing karaoke<small>cantar</small></span>
+      <span class="word-chipv">🎮 play video game<small>videogame</small></span>
+      <span class="word-chipv">📚 read books<small>ler livros</small></span>
+      <span class="word-chipv">🎲 play board game<small>jogo de tabuleiro</small></span>
+    </div>`},
+  {e:'🎵', t:'Atividades divertidas (2)', h:`<div class="word-grid">
+      <span class="word-chipv">🎨 paint<small>pintar</small></span>
+      <span class="word-chipv">🧩 do puzzles<small>quebra-cabeça</small></span>
+      <span class="word-chipv">🎵 listen to music<small>ouvir música</small></span>
+      <span class="word-chipv">🏗️ make models<small>fazer maquete</small></span>
+      <span class="word-chipv">💃 dance<small>dançar</small></span>
+      <span class="word-chipv">✏️ draw<small>desenhar</small></span>
+    </div>
+    <p style="font-size:17px">Você já sabe um montão de palavras! 🎉</p>`}
+];
+
+function startLearn(){ S.learnIdx=0; renderLearn(); show('scr-learn'); }
+function renderLearn(){
+  const c = learnCards[S.learnIdx];
+  document.getElementById('learnCard').innerHTML =
+    `<div class="big-emoji">${c.e}</div><h2>${c.t}</h2>${c.h}`;
+  document.getElementById('learnDots').innerHTML =
+    learnCards.map((_,i)=>`<div class="dot ${i===S.learnIdx?'on':''}"></div>`).join('');
+  document.getElementById('learnPrev').disabled = S.learnIdx===0;
+  document.getElementById('learnNext').textContent =
+    S.learnIdx===learnCards.length-1 ? 'Terminei! 🎉' : 'Próximo ➡';
+}
+function learnMove(d){
+  const nxt = S.learnIdx + d;
+  if(nxt >= learnCards.length){
+    if(!S.learnDone){ S.learnDone=true; addPoints(20); confetti(); }
+    goHome(); return;
+  }
+  if(nxt<0) return;
+  S.learnIdx = nxt; renderLearn();
+}
+
+/* ---------------- PRACTICE ---------------- */
+const questions = [
+  {type:'mc', e:'🌍', q:'Quanto tempo dura a "Rotation" da Terra?',
+    opts:['24 hours ⏰','365 days 📅','7 days 🗓️'], correct:0,
+    why:'Rotation = 24 horas = 1 dia e 1 noite!'},
+  {type:'tf', e:'☀️', q:'"Revolution" dura 365 days e forma 1 year (1 ano).',
+    correct:true, why:'Isso mesmo! A volta ao redor do Sol dura 1 ano.'},
+  {type:'mc', e:'❄️', q:'Qual estação do ano é "Winter"?',
+    opts:['Verão ☀️','Inverno ❄️','Primavera 🌸'], correct:1,
+    why:'Winter = Inverno, a estação do friozinho!'},
+  {type:'mc', e:'🍁', q:'"Fall" em português é...',
+    opts:['Outono 🍂','Verão 🏖️','Inverno ⛄'], correct:0,
+    why:'Fall = Outono, quando as folhas caem!'},
+  {type:'mc', e:'🧭', q:'No mapa, a letra N significa...',
+    opts:['Night (noite) 🌙','North (Norte) ⬆️','Nose (nariz) 👃'], correct:1,
+    why:'N = North = Norte, sempre em cima no mapa!'},
+  {type:'mc', e:'🗺️', q:'Qual é o contrário de East (Leste)?',
+    opts:['West (Oeste) ⬅️','South (Sul) ⬇️','North (Norte) ⬆️'], correct:0,
+    why:'East e West são opostos: Leste ↔ Oeste!'},
+  {type:'mc', e:'🐄', q:'O que os "livestock farmers" fazem?',
+    opts:['Raise animals (criam animais) 🐮','Fly planes (pilotam aviões) ✈️','Play soccer (jogam futebol) ⚽'], correct:0,
+    why:'Livestock farmers criam animais para produzir alimentos!'},
+  {type:'tf', e:'🏠', q:'"Intensive" é ao ar livre, com poucos animais.',
+    correct:false, why:'Intensive é fechado (indoors) com MUITOS animais. Ao ar livre com poucos é Extensive!'},
+  {type:'mc', e:'🌽', q:'Complete: Arable farming → growing → crops → ___',
+    opts:['Food (alimento) 🍎','Toys (brinquedos) 🧸','Cars (carros) 🚗'], correct:0,
+    why:'As plantações (crops) viram alimento (food)!'},
+  {type:'mc', e:'♻️', q:'Muito "waste" (resíduo) causa...',
+    opts:['Environmental pollution 😔','More food 🍎','Less animals 🐄'], correct:0,
+    why:'Waste demais causa poluição ambiental. Vamos cuidar do planeta! 🌎'},
+  {type:'order', e:'📚', q:'Monte a frase: "Eu gosto de ler livros"',
+    words:['I','like','reading','books'], answer:'I like reading books',
+    why:'A ordem é: I + like + reading + books!'},
+  {type:'order', e:'⚽', q:'Monte a frase: "Ela não gosta de jogar futebol"',
+    words:['She',"doesn't",'like','playing','soccer'], answer:"She doesn't like playing soccer",
+    why:"A ordem é: She + doesn't + like + playing + soccer!"},
+  {type:'mc', e:'🎵', q:'"Listen to music" significa...',
+    opts:['Ouvir música 🎧','Pintar 🎨','Dançar 💃'], correct:0,
+    why:'Listen to music = ouvir música!'},
+  {type:'mc', e:'❓', q:'Como se pergunta "O que você gosta de fazer?"',
+    opts:['What do you like doing? ✅','Where is the book? 📕','How old are you? 🎂'], correct:0,
+    why:'What do you like doing? = O que você gosta de fazer?'}
+];
+
+const cheers = ['Muito bem! 🎉 Você acertou!','Uau! 🌟 Mandou muito bem!','Isso aí! 🚀 Acertou!','Incrível! 💛 Resposta certa!'];
+const oops = ['Quase! 😊 Vamos tentar novamente?','Quase lá! 💪 Tente de novo!','Não foi dessa vez! 😉 Tente outra vez!'];
+
+function startPractice(){
+  S.qIdx=0; S.firstTryCorrect=0;
+  renderQuestion(); show('scr-practice');
+}
+function starsFor(i){
+  const earned = Math.floor((i)/questions.length*3)+ (i>0?0:0);
+  return '⭐'.repeat(Math.max(1,Math.min(3, Math.ceil((i+1)/questions.length*3))));
+}
+function renderQuestion(){
+  const q = questions[S.qIdx];
+  S.qAnsweredFirstTry = true;
+  document.getElementById('qCounter').textContent = `Questão ${S.qIdx+1} de ${questions.length}`;
+  document.getElementById('qBar').style.width = (S.qIdx/questions.length*100)+'%';
+  document.getElementById('qStars').textContent = starsFor(S.qIdx);
+  const card = document.getElementById('qCard');
+
+  let inner = `<div class="q-emoji">${q.e}</div><div class="q-text">${q.q}</div>`;
+
+  if(q.type==='mc'){
+    inner += `<div class="answers">` + q.opts.map((o,i)=>
+      `<button class="ans-btn" onclick="answerMC(this,${i})">${o}</button>`).join('') + `</div>`;
+  } else if(q.type==='tf'){
+    inner += `<div class="answers">
+      <button class="ans-btn" onclick="answerTF(this,true)">✅ Verdadeiro</button>
+      <button class="ans-btn" onclick="answerTF(this,false)">❌ Falso</button></div>`;
+  } else if(q.type==='order'){
+    const shuffled = [...q.words].map((w,i)=>({w,i})).sort(()=>Math.random()-.5);
+    inner += `<div class="build-zone empty" id="buildZone"></div>
+      <div class="chips" id="chipPool">` +
+      shuffled.map(o=>`<button class="chip" data-w="${o.w.replace(/"/g,'&quot;')}" onclick="chipTap(this)">${o.w}</button>`).join('') +
+      `</div>
+      <button class="nav-btn check-btn" onclick="checkOrder()">Conferir ✔️</button>`;
+  }
+  inner += `<div class="feedback" id="fb"></div>`;
+  card.innerHTML = inner;
+}
+function feedback(good, why){
+  const fb = document.getElementById('fb');
+  fb.className = 'feedback show ' + (good?'good':'bad');
+  const msg = good ? cheers[Math.floor(Math.random()*cheers.length)] : oops[Math.floor(Math.random()*oops.length)];
+  fb.innerHTML = msg + (good && why ? `<small>${why}</small>` : (!good && why ? `<small>Dica: ${why}</small>` : ''));
+}
+function onCorrect(why){
+  if(S.qAnsweredFirstTry){ S.firstTryCorrect++; addPoints(10); } else { addPoints(5); }
+  feedback(true, why);
+  setTimeout(nextQuestion, 1600);
+}
+function onWrong(why){
+  S.qAnsweredFirstTry = false;
+  feedback(false, why);
+}
+function answerMC(btn, i){
+  const q = questions[S.qIdx];
+  if(i===q.correct){
+    btn.classList.add('correct');
+    document.querySelectorAll('#qCard .ans-btn').forEach(b=>b.classList.add('locked'));
+    onCorrect(q.why);
+  } else {
+    btn.classList.add('wrong','locked');
+    onWrong(q.why);
+  }
+}
+function answerTF(btn, val){
+  const q = questions[S.qIdx];
+  if(val===q.correct){
+    btn.classList.add('correct');
+    document.querySelectorAll('#qCard .ans-btn').forEach(b=>b.classList.add('locked'));
+    onCorrect(q.why);
+  } else {
+    btn.classList.add('wrong','locked');
+    onWrong(q.why);
+  }
+}
+function chipTap(chip){
+  const zone = document.getElementById('buildZone');
+  const pool = document.getElementById('chipPool');
+  if(chip.parentElement===pool){
+    zone.appendChild(chip); chip.classList.add('in-zone');
+  } else {
+    pool.appendChild(chip); chip.classList.remove('in-zone');
+  }
+  zone.classList.toggle('empty', zone.children.length===0);
+}
+function checkOrder(){
+  const q = questions[S.qIdx];
+  const zone = document.getElementById('buildZone');
+  const built = [...zone.children].map(c=>c.dataset.w).join(' ');
+  if(built === q.answer){
+    zone.style.borderColor = 'var(--leaf-d)'; zone.style.background='#DFF6E4';
+    onCorrect(q.why);
+  } else {
+    onWrong(q.why);
+  }
+}
+function nextQuestion(){
+  S.qIdx++;
+  if(S.qIdx >= questions.length){
+    if(!S.practiceDone){ S.practiceDone = true; addPoints(20); }
+    confetti(); goHome();
+  } else {
+    renderQuestion();
+  }
+}
+
+/* ---------------- MEMORY GAME ---------------- */
+const pairs = [
+  {en:'play soccer', pt:'jogar futebol', e:'⚽'},
+  {en:'read books', pt:'ler livros', e:'📚'},
+  {en:'paint', pt:'pintar', e:'🎨'},
+  {en:'dance', pt:'dançar', e:'💃'},
+  {en:'listen to music', pt:'ouvir música', e:'🎵'},
+  {en:'draw', pt:'desenhar', e:'✏️'}
+];
+let memFirst=null, memLock=false, memFound=0;
+
+function startGame(){
+  memFirst=null; memLock=false; memFound=0; S.gameMoves=0;
+  const cards = [];
+  pairs.forEach((p,i)=>{
+    cards.push({id:i, lang:'en', label:p.en, e:p.e, flag:'🇺🇸'});
+    cards.push({id:i, lang:'pt', label:p.pt, e:p.e, flag:'🇧🇷'});
+  });
+  cards.sort(()=>Math.random()-.5);
+  document.getElementById('memGrid').innerHTML = cards.map((c,idx)=>
+    `<button class="mem-card" data-id="${c.id}" onclick="memFlip(this)">
+      <div class="mem-inner">
+        <div class="mem-face mem-front">❓</div>
+        <div class="mem-face mem-back"><span class="mem-e">${c.e}</span>${c.flag} ${c.label}</div>
+      </div>
+    </button>`).join('');
+  updateGameStatus();
+  show('scr-game');
+}
+function updateGameStatus(){
+  document.getElementById('gameStatus').textContent = `Pares encontrados: ${memFound} de ${pairs.length}`;
+}
+function memFlip(card){
+  if(memLock || card.classList.contains('flipped')) return;
+  card.classList.add('flipped');
+  if(!memFirst){ memFirst = card; return; }
+  S.gameMoves++;
+  const a = memFirst, b = card;
+  memFirst = null;
+  if(a.dataset.id === b.dataset.id){
+    a.classList.add('matched'); b.classList.add('matched');
+    memFound++; addPoints(5); updateGameStatus();
+    if(memFound===pairs.length){
+      if(!S.gameDone){ S.gameDone=true; addPoints(20); }
+      confetti();
+      setTimeout(goHome, 1800);
+    }
+  } else {
+    memLock = true;
+    setTimeout(()=>{
+      a.classList.remove('flipped'); b.classList.remove('flipped');
+      memLock = false;
+    }, 900);
+  }
+}
+
+/* ---------------- FINAL ---------------- */
+function showFinal(){
+  if(!(S.learnDone && S.practiceDone && S.gameDone)) return;
+  document.getElementById('fPoints').textContent = S.points;
+  document.getElementById('fFirst').textContent = `${S.firstTryCorrect} de ${questions.length}`;
+  document.getElementById('fGame').textContent = `Completo em ${S.gameMoves} jogadas! 🎉`;
+  confetti();
+  show('scr-final');
+}
+function restartAll(){
+  S.points=0; S.learnDone=false; S.practiceDone=false; S.gameDone=false;
+  S.firstTryCorrect=0; S.gameMoves=0;
+  document.getElementById('scoreVal').textContent='0';
+  goHome();
+}
+
+refreshHome();
+</script>
+</body>
+</html>
